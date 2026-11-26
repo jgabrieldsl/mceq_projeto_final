@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Gera uma apresentação de slides HTML moderna, interativa e autossuficiente (com a Figura 1 embutida em Base64)
-seguindo exatamente a estrutura de 5 blocos do Roteiro de Vídeo/Apresentação (Seção 7, p. 8-9)
-e o Protocolo de 1 Página (Seção 4) de MCEQ 12576 – PUC-Campinas.
+Gera a apresentação HTML com design editorial suíço/acadêmico (ACM / Nature / Keynote clean),
+sem clichês visuais de IA, com muito respiro visual (9 slides bem distribuídos)
+e um painel retrátil de Notas de Fala (tecla N) para ter 100% do conteúdo sem poluir a tela.
 """
 
 import os
@@ -23,22 +23,25 @@ HTML_CONTENT = f"""<!DOCTYPE html>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MCEQ 12576 – Apresentação do Projeto Final | PUC-Campinas</title>
+  <title>Notificações Push e Abertura Diária de App — MCEQ 12576</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {{
-      --bg-dark: #0b1120;
-      --bg-card: rgba(17, 25, 45, 0.88);
-      --bg-card-alt: rgba(30, 41, 69, 0.72);
-      --border-subtle: rgba(148, 163, 184, 0.18);
-      --accent-blue: #38bdf8;
-      --accent-indigo: #6366f1;
-      --accent-amber: #f59e0b;
-      --accent-emerald: #10b981;
-      --accent-rose: #f43f5e;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --font-mono: 'JetBrains Mono', 'Fira Code', Menlo, monospace;
+      --bg-paper: #FAF9F5;
+      --bg-surface: #FFFFFF;
+      --bg-subtle: #F2EFE9;
+      --ink-900: #111315;
+      --ink-700: #373A40;
+      --ink-500: #686D76;
+      --ink-300: #D8D5CE;
+      --accent: #0B4F6C;
+      --accent-soft: #E6F0F5;
+      --accent-warm: #B84A14;
+      --font-serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'IBM Plex Mono', Menlo, monospace;
     }}
 
     * {{
@@ -48,772 +51,882 @@ HTML_CONTENT = f"""<!DOCTYPE html>
     }}
 
     body {{
+      background: var(--bg-paper);
+      color: var(--ink-900);
       font-family: var(--font-sans);
-      background: radial-gradient(circle at 12% 18%, #172554 0%, #0b1120 55%, #060a14 100%);
-      color: var(--text-main);
       height: 100vh;
       width: 100vw;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      user-select: none;
+      -webkit-font-smoothing: antialiased;
     }}
 
-    /* Top Header Bar */
-    .top-bar {{
-      height: 54px;
-      padding: 0 32px;
+    /* Minimal Editorial Top Header */
+    .header {{
+      height: 60px;
+      padding: 0 56px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border-subtle);
-      background: rgba(11, 17, 32, 0.85);
-      backdrop-filter: blur(12px);
-      z-index: 20;
+      border-bottom: 1px solid var(--ink-300);
+      font-size: 0.8rem;
+      color: var(--ink-500);
       flex-shrink: 0;
     }}
 
-    .brand {{
+    .header-left {{
       display: flex;
       align-items: center;
-      gap: 12px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      color: var(--text-muted);
+      gap: 16px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.02em;
     }}
 
-    .brand-badge {{
-      background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
-      color: #fff;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-weight: 700;
+    .header-divider {{
+      color: var(--ink-300);
+    }}
+
+    .speaker-indicator {{
+      font-family: var(--font-mono);
       font-size: 0.78rem;
+      color: var(--ink-700);
+      background: var(--bg-subtle);
+      padding: 6px 14px;
+      border-radius: 4px;
+      border: 1px solid var(--ink-300);
     }}
 
-    .presenter-pill {{
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      padding: 5px 14px;
-      border-radius: 999px;
-      font-size: 0.82rem;
+    .speaker-indicator strong {{
+      color: var(--accent);
       font-weight: 600;
-      color: var(--accent-blue);
-      transition: all 0.3s ease;
     }}
 
-    .presenter-dot {{
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent-emerald);
-      box-shadow: 0 0 8px var(--accent-emerald);
-    }}
-
-    /* Slide Viewport */
-    .deck-viewport {{
+    /* Viewport */
+    .stage {{
       flex: 1;
       position: relative;
-      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px 44px;
+      padding: 36px 72px;
+      overflow: hidden;
     }}
 
     .slide {{
       position: absolute;
       width: 100%;
-      max-width: 1360px;
-      height: calc(100% - 24px);
+      max-width: 1180px;
+      height: calc(100% - 72px);
       display: flex;
       flex-direction: column;
       justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transform: translateX(40px) scale(0.985);
-      transition: opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1), transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
-      padding: 12px 24px;
+      transform: translateY(10px);
+      transition: opacity 0.28s ease, transform 0.28s ease;
     }}
 
     .slide.active {{
       opacity: 1;
       pointer-events: auto;
-      transform: translateX(0) scale(1);
+      transform: translateY(0);
     }}
 
-    /* Typography & Layout inside slides */
-    .slide-kicker {{
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.82rem;
+    /* Editorial Typography */
+    .section-tag {{
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
       text-transform: uppercase;
-      letter-spacing: 0.11em;
-      font-weight: 700;
-      color: var(--accent-blue);
-      margin-bottom: 8px;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 16px;
+      font-weight: 600;
     }}
 
-    .slide-title {{
-      font-size: 2.15rem;
-      font-weight: 800;
-      line-height: 1.18;
-      margin-bottom: 12px;
+    h1.hero-title {{
+      font-family: var(--font-serif);
+      font-size: 3.1rem;
+      font-weight: 500;
+      line-height: 1.14;
+      color: var(--ink-900);
       letter-spacing: -0.02em;
-      background: linear-gradient(95deg, #ffffff 0%, #cbd5e1 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }}
-
-    .slide-subtitle {{
-      font-size: 1.05rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-      margin-bottom: 22px;
       max-width: 980px;
+      margin-bottom: 24px;
     }}
 
-    .grid-2 {{
+    h2.slide-heading {{
+      font-family: var(--font-serif);
+      font-size: 2.35rem;
+      font-weight: 500;
+      line-height: 1.18;
+      color: var(--ink-900);
+      letter-spacing: -0.015em;
+      margin-bottom: 16px;
+      max-width: 920px;
+    }}
+
+    p.lead {{
+      font-size: 1.12rem;
+      line-height: 1.6;
+      color: var(--ink-700);
+      max-width: 820px;
+      margin-bottom: 36px;
+      font-weight: 400;
+    }}
+
+    /* Clean Grids & Dividers */
+    .cols-2 {{
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      width: 100%;
+      gap: 48px;
+      align-items: start;
     }}
 
-    .grid-3 {{
+    .cols-3 {{
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      width: 100%;
+      gap: 36px;
+      align-items: start;
     }}
 
-    .grid-4 {{
+    .cols-4 {{
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      width: 100%;
+      gap: 28px;
+      align-items: start;
     }}
 
-    .card {{
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 14px;
-      padding: 20px 22px;
-      box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.55);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .panel {{
+      background: var(--bg-surface);
+      border: 1px solid var(--ink-300);
+      padding: 28px 30px;
+      border-radius: 4px;
     }}
 
-    .card-highlight {{
-      border-color: rgba(56, 189, 248, 0.45);
-      background: linear-gradient(160deg, rgba(30, 58, 138, 0.42), rgba(15, 23, 42, 0.9));
+    .panel-accent {{
+      background: var(--bg-surface);
+      border: 1px solid var(--ink-300);
+      border-top: 3px solid var(--accent);
+      padding: 28px 30px;
+      border-radius: 2px;
     }}
 
-    .card-amber {{
-      border-color: rgba(245, 158, 11, 0.45);
-      background: linear-gradient(160deg, rgba(120, 53, 15, 0.28), rgba(15, 23, 42, 0.9));
-    }}
-
-    .card-emerald {{
-      border-color: rgba(16, 185, 129, 0.45);
-      background: linear-gradient(160deg, rgba(6, 78, 59, 0.32), rgba(15, 23, 42, 0.9));
-    }}
-
-    .card-title {{
-      font-size: 1.02rem;
-      font-weight: 700;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }}
-
-    .badge {{
-      display: inline-block;
-      padding: 3px 9px;
-      border-radius: 6px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }}
-
-    .badge-blue {{ background: rgba(56, 189, 248, 0.16); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.35); }}
-    .badge-emerald {{ background: rgba(16, 185, 129, 0.16); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); }}
-    .badge-amber {{ background: rgba(245, 158, 11, 0.16); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }}
-    .badge-rose {{ background: rgba(244, 63, 94, 0.16); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.35); }}
-
-    .card p, .card li {{
-      font-size: 0.91rem;
-      line-height: 1.52;
-      color: #cbd5e1;
-    }}
-
-    .card ul {{
-      padding-left: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }}
-
-    .stat-big {{
-      font-size: 2.3rem;
-      font-weight: 800;
-      color: var(--accent-blue);
-      line-height: 1.1;
+    .panel-label {{
       font-family: var(--font-mono);
-    }}
-
-    .stat-label {{
-      font-size: 0.8rem;
-      color: var(--text-muted);
+      font-size: 0.73rem;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--ink-500);
+      margin-bottom: 10px;
+      display: block;
     }}
 
-    /* Tables */
-    table.data-table {{
+    .panel-title {{
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 500;
+      color: var(--ink-900);
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }}
+
+    .panel p {{
+      font-size: 0.96rem;
+      line-height: 1.62;
+      color: var(--ink-700);
+    }}
+
+    /* Big Editorial Numbers */
+    .metric-row {{
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--ink-900);
+      border-bottom: 1px solid var(--ink-300);
+      padding: 24px 0;
+      gap: 32px;
+    }}
+
+    .metric-item {{
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }}
+
+    .metric-value {{
+      font-family: var(--font-serif);
+      font-size: 2.75rem;
+      font-weight: 500;
+      color: var(--ink-900);
+      line-height: 1;
+    }}
+
+    .metric-value.highlight {{
+      color: var(--accent);
+    }}
+
+    .metric-caption {{
+      font-size: 0.85rem;
+      color: var(--ink-500);
+      line-height: 1.4;
+    }}
+
+    /* Booktabs Academic Table */
+    table.booktabs {{
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.86rem;
-      margin-top: 4px;
+      font-size: 0.95rem;
+      background: var(--bg-surface);
     }}
 
-    table.data-table th {{
+    table.booktabs thead th {{
+      border-top: 2px solid var(--ink-900);
+      border-bottom: 1px solid var(--ink-900);
+      padding: 12px 14px;
       text-align: left;
-      padding: 9px 11px;
-      background: rgba(30, 41, 59, 0.9);
-      color: var(--accent-blue);
-      font-weight: 700;
-      border-bottom: 2px solid rgba(56, 189, 248, 0.35);
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 0.84rem;
+      color: var(--ink-900);
     }}
 
-    table.data-table td {{
-      padding: 8px 11px;
-      border-bottom: 1px solid var(--border-subtle);
-      color: #e2e8f0;
+    table.booktabs tbody td {{
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--ink-300);
+      color: var(--ink-700);
     }}
 
-    table.data-table tr:last-child td {{
-      border-bottom: none;
-      background: rgba(56, 189, 248, 0.08);
+    table.booktabs tbody tr:last-child td {{
+      border-top: 1px solid var(--ink-900);
+      border-bottom: 2px solid var(--ink-900);
+      font-weight: 600;
+      color: var(--ink-900);
+      background: var(--bg-subtle);
+    }}
+
+    .mono-num {{
+      font-family: var(--font-mono);
+      text-align: right !important;
+      font-size: 0.9rem;
+    }}
+
+    /* Clean Lists */
+    ul.editorial-list {{
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }}
+
+    ul.editorial-list li {{
+      font-size: 0.96rem;
+      line-height: 1.58;
+      color: var(--ink-700);
+      padding-left: 18px;
+      position: relative;
+    }}
+
+    ul.editorial-list li::before {{
+      content: "—";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
       font-weight: 600;
     }}
 
-    .num {{
-      text-align: right !important;
-      font-family: var(--font-mono);
+    /* Math / Hypothesis Block */
+    .math-block {{
+      background: var(--bg-subtle);
+      border-left: 3px solid var(--ink-900);
+      padding: 20px 24px;
+      font-family: var(--font-serif);
+      font-size: 1.22rem;
+      color: var(--ink-900);
+      line-height: 1.65;
+      margin-top: 12px;
     }}
 
-    .formula-box {{
-      background: rgba(9, 14, 28, 0.85);
-      border: 1px solid rgba(99, 102, 241, 0.35);
-      border-left: 4px solid var(--accent-indigo);
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-family: var(--font-mono);
-      font-size: 0.92rem;
-      color: #e0e7ff;
+    /* Author Roster on Cover */
+    .authors-strip {{
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      padding-top: 28px;
+      border-top: 1px solid var(--ink-900);
+      margin-top: 12px;
     }}
 
-    .figure-container {{
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-      max-height: 490px;
-    }}
-
-    .figure-container img {{
-      max-width: 100%;
-      max-height: 440px;
-      object-fit: contain;
-      border-radius: 6px;
-    }}
-
-    /* Author cards on Slide 1 */
-    .author-card {{
-      background: var(--bg-card-alt);
-      border: 1px solid var(--border-subtle);
-      border-radius: 12px;
-      padding: 16px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }}
-
-    .author-name {{
+    .author-box h3 {{
       font-size: 1.05rem;
-      font-weight: 700;
-      color: #fff;
+      font-weight: 600;
+      color: var(--ink-900);
+      margin-bottom: 4px;
     }}
 
-    .author-meta {{
-      font-size: 0.82rem;
-      color: var(--text-muted);
+    .author-box p {{
       font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--ink-500);
+      line-height: 1.5;
     }}
 
-    /* Bottom Navigation Bar */
-    .bottom-bar {{
-      height: 56px;
-      padding: 0 32px;
+    .author-role {{
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 500;
+    }}
+
+    /* Collapsible Speaker Notes Drawer (100% content without cluttering the slide) */
+    .notes-drawer {{
+      position: fixed;
+      bottom: 54px;
+      left: 0;
+      right: 0;
+      background: #16191D;
+      color: #EAECEF;
+      padding: 20px 72px;
+      border-top: 2px solid var(--accent);
+      transform: translateY(100%);
+      transition: transform 0.25s ease;
+      z-index: 30;
+      box-shadow: 0 -10px 30px rgba(0,0,0,0.18);
+    }}
+
+    .notes-drawer.open {{
+      transform: translateY(0);
+    }}
+
+    .notes-header {{
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #7CC4E8;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }}
+
+    .notes-body {{
+      font-size: 0.94rem;
+      line-height: 1.6;
+      color: #D8DEE9;
+      max-width: 1120px;
+    }}
+
+    /* Footer Navigation */
+    .footer {{
+      height: 54px;
+      padding: 0 56px;
+      border-top: 1px solid var(--ink-300);
+      background: var(--bg-paper);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-top: 1px solid var(--border-subtle);
-      background: rgba(11, 17, 32, 0.9);
-      backdrop-filter: blur(12px);
-      z-index: 20;
+      z-index: 40;
       flex-shrink: 0;
     }}
 
-    .progress-dots {{
+    .footer-steps {{
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }}
 
-    .dot {{
-      width: 28px;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(148, 163, 184, 0.25);
+    .step-btn {{
+      border: none;
+      background: transparent;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--ink-500);
+      padding: 5px 10px;
       cursor: pointer;
-      transition: all 0.25s ease;
+      border-radius: 3px;
+      transition: all 0.15s ease;
     }}
 
-    .dot.active {{
-      width: 48px;
-      background: var(--accent-blue);
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+    .step-btn:hover {{
+      color: var(--ink-900);
+      background: var(--bg-subtle);
     }}
 
-    .nav-controls {{
+    .step-btn.active {{
+      color: var(--bg-surface);
+      background: var(--ink-900);
+      font-weight: 600;
+    }}
+
+    .footer-actions {{
       display: flex;
       align-items: center;
       gap: 10px;
     }}
 
-    .btn-nav {{
-      background: rgba(30, 41, 59, 0.85);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-main);
-      padding: 7px 15px;
-      border-radius: 8px;
-      font-size: 0.84rem;
-      font-weight: 600;
+    .ctrl-btn {{
+      background: var(--bg-surface);
+      border: 1px solid var(--ink-300);
+      color: var(--ink-900);
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 6px 13px;
+      border-radius: 3px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
     }}
 
-    .btn-nav:hover {{
-      background: rgba(56, 189, 248, 0.18);
-      border-color: var(--accent-blue);
+    .ctrl-btn:hover {{
+      border-color: var(--ink-900);
     }}
 
-    .slide-counter {{
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      min-width: 75px;
-      text-align: center;
+    .ctrl-btn.active-toggle {{
+      background: var(--ink-900);
+      color: var(--bg-surface);
+      border-color: var(--ink-900);
     }}
   </style>
 </head>
 <body>
 
-  <!-- Top Header -->
-  <header class="top-bar">
-    <div class="brand">
-      <span class="brand-badge">PUC-CAMPINAS • 2026/2</span>
-      <span>12576 – Métodos de Computação Experimental e Quantitativa (MCEQ)</span>
+  <!-- Top Editorial Bar -->
+  <header class="header">
+    <div class="header-left">
+      <span>PUC-CAMPINAS • ENGENHARIA DE SOFTWARE</span>
+      <span class="header-divider">/</span>
+      <span>12576 — MCEQ (2026/2)</span>
     </div>
-    <div class="presenter-pill" id="presenter-pill">
-      <span class="presenter-dot"></span>
-      <span id="presenter-text">Apresentador: João Gabriel da Silva Leite (Bloco 1)</span>
+    <div class="speaker-indicator" id="speaker-pill">
+      Apresentação: <strong>João Gabriel</strong> (0:00 – 1:15)
     </div>
   </header>
 
-  <!-- Main Slide Deck -->
-  <main class="deck-viewport">
+  <!-- Main Slide Stage -->
+  <main class="stage">
 
-    <!-- SLIDE 1: CAPA + EQUIPE -->
-    <section class="slide active" data-presenter="João Gabriel da Silva Leite • Abertura & Problema (0:00 – 1:15)">
-      <div class="slide-kicker">Projeto Final • Artigo no Template ACM + Pacote de Reprodutibilidade</div>
-      <h1 class="slide-title" style="font-size: 2.45rem; max-width: 1120px;">
-        Envio de Notificações Push e Frequência Diária de Abertura de Aplicativo Móvel: Um Estudo Observacional Longitudinal
+    <!-- SLIDE 1: CAPA -->
+    <section class="slide active"
+      data-speaker="João Gabriel da Silva Leite • Abertura (0:00 – 1:00)"
+      data-notes="Fala (João Gabriel): Olá professores. Nosso estudo avalia empiricamente a associação entre o regime diário de entrega de notificações push e a frequência de aberturas do aplicativo no mesmo dia, utilizando um desenho em blocos pareados por usuário (n = 194 blocos) a partir de 42.504 janelas monitoradas via Screen Time API no projeto longitudinal FUTURE.">
+      <div class="section-tag">Relatório Final no Template ACM • Estudo Observacional Longitudinal</div>
+      <h1 class="hero-title">
+        Envio de Notificações Push e Frequência Diária de Abertura de Aplicativo Móvel
       </h1>
-      <p class="slide-subtitle">
-        Avaliação empírica em blocos pareados por usuário (<i>n</i> = 194 blocos; 7.503 usuários-dia ativos; 42.504 janelas de telemetria) a partir do pacote público de replicação do projeto FUTURE (OSF).
+      <p class="lead">
+        Análise empírica em blocos pareados por usuário (<i>n</i> = 194 usuários; 7.503 usuários-dia ativos) a partir do pacote público de replicação do projeto <i>FUTURE</i> depositado na Open Science Framework (OSF).
       </p>
 
-      <div class="grid-3" style="margin-bottom: 20px;">
-        <div class="author-card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="author-name">João Gabriel da Silva Leite</span>
-            <span class="badge badge-blue">Bloco 1 (0:00–2:45)</span>
-          </div>
-          <span class="author-meta">RA: 24787392 • Engenharia de Software</span>
-          <span class="author-meta">joao.gsl@puccampinas.edu.br</span>
-          <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Problema, Adaptação da Ficha (Seção 3.3), Hipóteses H0/H1 e Proveniência OSF</span>
+      <div class="authors-strip">
+        <div class="author-box">
+          <h3>João Gabriel da Silva Leite</h3>
+          <p>RA 24787392 • joao.gsl@puccampinas.edu.br</p>
+          <span class="author-role">Parte 1 — Problema, Hipóteses e Base OSF</span>
         </div>
-
-        <div class="author-card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="author-name">Yuri Cardoso Balieiro</span>
-            <span class="badge badge-emerald">Bloco 2 (2:45–5:45)</span>
-          </div>
-          <span class="author-meta">RA: 24011525 • Engenharia de Software</span>
-          <span class="author-meta">yuri.cb@puccampinas.edu.br</span>
-          <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Desenho em Blocos Pareados, Limpeza, Escolha do Teste e Resultados Confirmatórios</span>
+        <div class="author-box">
+          <h3>Yuri Cardoso Balieiro</h3>
+          <p>RA 24011525 • yuri.cb@puccampinas.edu.br</p>
+          <span class="author-role">Parte 2 — Desenho em Blocos e Resultados</span>
         </div>
-
-        <div class="author-card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="author-name">Pedro de Mello Porto Daou</span>
-            <span class="badge badge-amber">Bloco 3 (5:45–8:30)</span>
-          </div>
-          <span class="author-meta">RA: 21010698 • Engenharia de Software</span>
-          <span class="author-meta">pedro.mpd@puccampinas.edu.br</span>
-          <span style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">Análises Exploratórias, 4 Ameaças à Validade, Conclusão e Reprodutibilidade</span>
-        </div>
-      </div>
-
-      <div class="grid-4">
-        <div class="card card-highlight" style="padding: 14px 18px;">
-          <span class="stat-label">Janelas Monitoradas</span>
-          <span class="stat-big">42.504</span>
-          <span style="font-size:0.8rem; color:#94a3b8;">201 usuários (Screen Time API)</span>
-        </div>
-        <div class="card card-highlight" style="padding: 14px 18px;">
-          <span class="stat-label">Blocos Pareados (Usuários)</span>
-          <span class="stat-big">n = 194</span>
-          <span style="font-size:0.8rem; color:#94a3b8;">Com ambos os regimes de push</span>
-        </div>
-        <div class="card card-emerald" style="padding: 14px 18px;">
-          <span class="stat-label">Diferença Média Pareada</span>
-          <span class="stat-big" style="color:#34d399;">+1,11</span>
-          <span style="font-size:0.8rem; color:#94a3b8;">aberturas/dia (IC 95%: [1,02; 1,20])</span>
-        </div>
-        <div class="card card-amber" style="padding: 14px 18px;">
-          <span class="stat-label">Tamanho de Efeito (Cohen)</span>
-          <span class="stat-big" style="color:#fbbf24;">d<sub>z</sub> = 1,75</span>
-          <span style="font-size:0.8rem; color:#94a3b8;">t = 24,44 | p = 2,80 × 10<sup>-61</sup></span>
+        <div class="author-box">
+          <h3>Pedro de Mello Porto Daou</h3>
+          <p>RA 21010698 • pedro.mpd@puccampinas.edu.br</p>
+          <span class="author-role">Parte 3 — Exploratórias, Validade e Conclusão</span>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 2: PROBLEMA, ADAPTAÇÃO DA FICHA (SEÇÃO 3.3) E HIPÓTESES -->
-    <section class="slide" data-presenter="João Gabriel da Silva Leite • Bloco 1: Problema e Hipóteses (0:00 – 1:30)">
-      <div class="slide-kicker">Bloco 1 do Roteiro • Problema, Adaptação da Ficha (Seção 3.3) e Hipóteses</div>
-      <h2 class="slide-title">Do Problema Original (Semana 4) ao Protocolo com Base Pública</h2>
-      <p class="slide-subtitle">
-        Em Engenharia de Software móvel, o disparo de notificações <i>push</i> enfrenta um dilema arquitetural: frequência insuficiente reduz a retenção diária, enquanto o excesso provoca fadiga e revogação de permissões (Wohllebe, 2020; Mehrotra &amp; Musolesi, 2020).
+    <!-- SLIDE 2: PROBLEMA E ADAPTAÇÃO DA FICHA (SEÇÃO 3.3) -->
+    <section class="slide"
+      data-speaker="João Gabriel da Silva Leite • Bloco 1: Problema e Adaptação (1:00 – 1:50)"
+      data-notes="Fala (João Gabriel): Na revisão da Semana 5 (Wohllebe 2020; Philip 2024; Mehrotra & Musolesi 2020), vimos que notificações push são o principal gatilho externo de engajamento, mas sofrem com falhas de entrega e fadiga. Na Ficha de Hipótese da Semana 4, nosso foco era notificação de PIX recebido. Como logs bancários são protegidos por sigilo, aplicamos a regra da Seção 3.3 do roteiro: mantivemos o problema (entrega de push) e a mesma variável resposta (aberturas do aplicativo no mesmo dia), adaptando os níveis da variável independente para os regimes reais medidos na base pública.">
+      <div class="section-tag">01 / Contexto e Adaptação da Ficha de Hipótese (Seção 3.3)</div>
+      <h2 class="slide-heading">Do Problema em Engenharia de Software à Base Pública</h2>
+      <p class="lead">
+        Arquiteturas móveis dependem de serviços de mensageria assíncrona (FCM / APNs) para sustentar a retenção diária sem provocar fadiga ou revogação de permissões pelo usuário.
       </p>
 
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-title">
-            <span>1. Adaptação Transparente da Ficha (Seção 3.3)</span>
-            <span class="badge badge-blue">Protocolo Prévio</span>
-          </div>
-          <ul>
-            <li><b>Ficha da Semana 4:</b> Avaliava notificações <i>push</i> de PIX recebido e o número de aberturas do aplicativo bancário no mesmo dia.</li>
-            <li><b>Por que adaptamos:</b> Registros bancários de PIX são proprietários e protegidos por sigilo bancário (sem base pública).</li>
-            <li><b>O que foi preservado (Regra 3.3):</b> Mantivemos o mesmo mecanismo de software (entrega de <i>push</i>) e a mesma variável dependente (<b>aberturas do app no mesmo dia</b>).</li>
-            <li><b>Ajuste nos níveis da VI:</b> Em dias ativos do estudo longitudinal, o servidor entregou <b>Notificação Completa (4 pushes/dia)</b> ou <b>Notificação Parcial (1 a 3 pushes/dia)</b> devido a falhas de rede/OS.</li>
+      <div class="cols-2">
+        <div class="panel">
+          <span class="panel-label">Literatura Base (Revisão da Semana 5)</span>
+          <h3 class="panel-title">O Dilema de Disparo de Push</h3>
+          <ul class="editorial-list">
+            <li><b>Wohllebe (2020) e Philip &amp; Hidayaturrahman (2024):</b> Notificações oportunas elevam o retorno ao aplicativo, mas o excesso gera rejeição.</li>
+            <li><b>Mehrotra &amp; Musolesi (2020):</b> O efeito do alerta depende da efetiva entrega pelo sistema operacional e do contexto imediato de uso do smartphone.</li>
           </ul>
         </div>
 
-        <div class="card card-highlight">
-          <div class="card-title">
-            <span>2. Pergunta de Pesquisa &amp; Hipóteses Formais</span>
-            <span class="badge badge-emerald">α = 0,05 Fixado a Priori</span>
-          </div>
-          <p style="font-size:0.93rem; color:#f1f5f9;">
-            <b>Pergunta:</b> <i>"Em usuários de um aplicativo móvel longitudinal, dias sob regime de Notificação Completa (4 pushes/dia) apresentam maior número médio de aberturas do aplicativo no mesmo dia do que dias sob Notificação Parcial (1 a 3 pushes/dia), controlando a variabilidade individual por blocagem no usuário?"</i>
-          </p>
-          <div class="formula-box">
-            Seja d<sub>i</sub> = Y<sub>i,Completa</sub> − Y<sub>i,Parcial</sub> a diferença intrapares no usuário i:<br><br>
-            • <b>H<sub>0</sub>:</b> μ<sub>d</sub> ≤ 0 &nbsp;(μ<sub>Completa</sub> ≤ μ<sub>Parcial</sub>)<br>
-            • <b>H<sub>1</sub>:</b> μ<sub>d</sub> &gt; 0 &nbsp;(μ<sub>Completa</sub> &gt; μ<sub>Parcial</sub>) — <i>Unilateral à direita</i>
-          </div>
-          <p style="font-size:0.83rem; color:#94a3b8;">
-            <b>Justificativa Unilateral (Aula 02):</b> A literatura revisada na Semana 5 aponta direção específica positiva do estímulo <i>push</i> sobre o acionamento imediato do aplicativo.
-          </p>
+        <div class="panel-accent">
+          <span class="panel-label">Adaptação Declarada no Protocolo (Seção 3.3)</span>
+          <h3 class="panel-title">O que mudou em relação à Semana 4?</h3>
+          <ul class="editorial-list">
+            <li><b>Ficha Original (Semana 4):</b> Avaliava notificações <i>push</i> de PIX recebido (dados bancários privados sem base pública).</li>
+            <li><b>O que foi preservado:</b> O mecanismo de software (entrega de notificação <i>push</i>) e a métrica de resposta (<b>aberturas do app no mesmo dia</b>).</li>
+            <li><b>Ajuste na VI:</b> Comparação entre dias ativos sob <b>Notificação Completa (4 pushes/dia)</b> versus <b>Notificação Parcial (1 a 3 pushes/dia)</b>.</li>
+          </ul>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 3: PROVENIÊNCIA DA BASE PÚBLICA E PIPELINE DE LIMPEZA -->
-    <section class="slide" data-presenter="João Gabriel (Base OSF) & Yuri Balieiro (Limpeza e Blocagem) • (1:30 – 3:45)">
-      <div class="slide-kicker">Bloco 2 do Roteiro • Base Pública (Seção 3.2) e Limpeza Reprodutível</div>
-      <h2 class="slide-title">Proveniência dos Dados (OSF) e Desenho em Blocos Pareados</h2>
-      <p class="slide-subtitle">
-        Base pública com identificador persistente e dicionário de variáveis completo, coletada via instrumentação passiva do sistema operacional móvel (<i>Screen Time API</i> / <i>UsageStatsManager</i>).
+    <!-- SLIDE 3: PERGUNTA DE PESQUISA E HIPÓTESES -->
+    <section class="slide"
+      data-speaker="João Gabriel da Silva Leite • Bloco 1: Pergunta e Hipóteses (1:50 – 2:45)"
+      data-notes="Fala (João Gabriel): Nossa pergunta de pesquisa compara a frequência diária de abertura do app entre os dois regimes de push, blocando no próprio usuário. Fixamos alfa = 0,05 antes da análise. Como a literatura prevê direção positiva (mais pushes entregues geram mais acionamentos no dia), formulamos uma hipótese alternativa unilateral à direita: mu_d > 0.">
+      <div class="section-tag">02 / Protocolo Confirmatório (Seção 4)</div>
+      <h2 class="slide-heading">Pergunta de Pesquisa e Hipóteses Estatísticas</h2>
+
+      <div class="cols-2" style="margin-top: 12px;">
+        <div class="panel">
+          <span class="panel-label">Pergunta de Pesquisa (Modelo GQM)</span>
+          <h3 class="panel-title" style="font-size: 1.45rem; line-height: 1.42;">
+            “Em usuários de um aplicativo móvel com coleta longitudinal, dias sob regime de Notificação Completa (4 pushes/dia) apresentam maior número médio de aberturas do aplicativo no mesmo dia do que dias sob Notificação Parcial (1 a 3 pushes/dia)?”
+          </h3>
+          <p style="margin-top: 16px;">
+            <b>Tipo de Estudo:</b> Observacional longitudinal (sem atribuição aleatória por sorteio; analisa-se associação empírica, não causalidade direta).
+          </p>
+        </div>
+
+        <div>
+          <span class="panel-label">Formulação Paramétrica Pareada (α = 0,05 fixado a priori)</span>
+          <div class="math-block">
+            Seja <i>d<sub>i</sub> = Y<sub>i,Completa</sub> − Y<sub>i,Parcial</sub></i> a diferença média intrapares no usuário <i>i</i>:<br><br>
+            <b>H<sub>0</sub> :</b> μ<sub>d</sub> ≤ 0 &nbsp;&nbsp;(μ<sub>Completa</sub> ≤ μ<sub>Parcial</sub>)<br>
+            <b>H<sub>1</sub> :</b> μ<sub>d</sub> &gt; 0 &nbsp;&nbsp;(μ<sub>Completa</sub> &gt; μ<sub>Parcial</sub>)
+          </div>
+          <div class="panel" style="margin-top: 18px; padding: 18px 22px;">
+            <p>
+              <b>Por que unilateral à direita (Aula 02)?</b> As três revisões sistemáticas da Semana 5 indicam direção específica positiva do estímulo <i>push</i> sobre o acionamento imediato do aplicativo.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: BASE PÚBLICA OSF E PIPELINE DE LIMPEZA -->
+    <section class="slide"
+      data-speaker="Yuri Cardoso Balieiro • Bloco 2: Base Pública e Limpeza (2:45 – 3:45)"
+      data-notes="Fala (Yuri): Utilizamos o pacote de replicação do projeto FUTURE (Dvořák, Kreidl & Tancoš, 2026), depositado no OSF (osf.io/n4sgb). Diferente de questionários subjetivos, a base coletou telemetria real via Screen Time API do sistema operacional em 42.504 janelas de 201 usuários. No script analise.py, removemos 3 janelas com erro de instrumentação (-666), agregamos por usuário-dia e filtramos os 7.503 dias ativos com ao menos 1 push entregue.">
+      <div class="section-tag">03 / Proveniência e Limpeza Reprodutível (Seção 3.1 e 3.3)</div>
+      <h2 class="slide-heading">Base Pública (OSF) e Pipeline de Limpeza</h2>
+      <p class="lead">
+        Pacote de replicação de Dvořák, Kreidl &amp; Tancoš (2026) — <code>https://osf.io/n4sgb/</code> — instrumentado diretamente via API de Tempo de Uso do sistema operacional (<i>Screen Time API</i>).
       </p>
 
-      <div class="grid-3">
-        <div class="card">
-          <div class="card-title">
-            <span>Proveniência &amp; Medição</span>
-            <span class="badge badge-blue">OSF: osf.io/n4sgb</span>
-          </div>
-          <ul>
-            <li><b>Autores:</b> Dvořák, Kreidl &amp; Tancoš (2026) – Projeto <i>FUTURE</i>.</li>
-            <li><b>Arquivo bruto:</b> <code>notif_data_final.dta</code> (licença aberta acadêmica).</li>
-            <li><b>Escala e Período:</b> 201 usuários monitorados em 4 ondas de 2 semanas (4 janelas fixas/dia: manhã, almoço, tarde e noite = <b>42.504 janelas</b>).</li>
-            <li><b>Instrumentação:</b> Sem autorrelato subjetivo — o próprio app registrou <code>notified</code>, <code>opened</code> e telemetria do smartphone (<code>screen_on</code>, <code>battery</code>).</li>
+      <div class="metric-row" style="margin-bottom: 28px;">
+        <div class="metric-item">
+          <span class="metric-value">42.504</span>
+          <span class="metric-caption">Janelas brutas no arquivo <code>notif_data_final.dta</code> (201 usuários)</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-value">−3</span>
+          <span class="metric-caption">Registros excluídos com código de erro técnico <code>-666</code> (42.501 válidas)</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-value">7.503</span>
+          <span class="metric-caption">Usuários-dia ativos (5.168 com 4 pushes; 2.335 com 1–3 pushes)</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-value highlight">n = 194</span>
+          <span class="metric-caption">Blocos completos (usuários avaliados sob ambos os regimes)</span>
+        </div>
+      </div>
+
+      <div class="cols-2">
+        <div class="panel" style="padding: 20px 24px;">
+          <span class="panel-label">Variável Independente (Fator em 2 Níveis)</span>
+          <p><b>Regime de Entrega Diária de Push:</b> Categorizado em <i>Notificação Completa</i> (4 pushes/dia entregues nas 4 janelas programadas) vs. <i>Notificação Parcial</i> (1 a 3 pushes/dia devido a restrições de rede/OS).</p>
+        </div>
+        <div class="panel" style="padding: 20px 24px;">
+          <span class="panel-label">Variável Dependente (Resposta Quantitativa)</span>
+          <p><b>Aberturas do Aplicativo no Mesmo Dia (<code>aberturas/dia</code>):</b> Soma diária de interações iniciadas (<code>opened == 1</code>, de 0 a 4 aberturas/dia), agregada pela média intrapessoal de cada regime.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: DESENHO EM BLOCOS E ESCOLHA DO TESTE -->
+    <section class="slide"
+      data-speaker="Yuri Cardoso Balieiro • Bloco 2: Desenho em Blocos e Escolha do Teste (3:45 – 4:35)"
+      data-notes="Fala (Yuri): Por que escolhemos um desenho em blocos pareados por usuário (Aula 06)? Porque pessoas diferentes possuem hábitos muito distintos de uso do smartphone. Ao tratar cada usuário como seu próprio bloco (comparando os dias de 4 pushes contra os dias de 1 a 3 pushes da mesma pessoa), eliminamos a variabilidade entre indivíduos. Além disso, evitamos a pseudorreplicação de tratar 7.503 dias como independentes. O teste de Shapiro-Wilk nas 194 diferenças pareadas deu W = 0,9921 e p = 0,3775 (> 0,05), confirmando normalidade e validando o teste t pareado.">
+      <div class="section-tag">04 / Desenho Experimental e Pressupostos (Seção 3.4)</div>
+      <h2 class="slide-heading">Por que Blocos Pareados e Teste <i>t</i> Pareado?</h2>
+
+      <div class="cols-3" style="margin-top: 20px;">
+        <div class="panel-accent">
+          <span class="panel-label">1. Controle de Variabilidade (Aula 06)</span>
+          <h3 class="panel-title">O Usuário como Bloco</h3>
+          <p>
+            Usuários diferem drasticamente no hábito basal de checar o celular. O pareamento intrapessoal (<i>d<sub>i</sub> = Y<sub>i,Completa</sub> − Y<sub>i,Parcial</sub></i>) isola a diferença entre regimes do ruído entre sujeitos.
+          </p>
+        </div>
+
+        <div class="panel-accent">
+          <span class="panel-label">2. Independência das Unidades</span>
+          <h3 class="panel-title">Sem Pseudorreplicação</h3>
+          <p>
+            Tratar 7.503 dias como independentes inflaria artificialmente os graus de liberdade. Agregar uma média por regime para cada um dos <b><i>n</i> = 194 usuários</b> garante independência entre blocos.
+          </p>
+        </div>
+
+        <div class="panel-accent">
+          <span class="panel-label">3. Verificação de Pressupostos</span>
+          <h3 class="panel-title">Normalidade Atendida</h3>
+          <p>
+            O teste de <b>Shapiro-Wilk</b> sobre o vetor de diferenças <i>d<sub>i</sub></i> resultou em <b><i>W</i> = 0,9921 (<i>p</i> = 0,3775 &gt; 0,05)</b>, com assimetria <i>g<sub>1</sub></i> = −0,10, validando o <b>teste <i>t</i> pareado</b>.
+          </p>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.92rem; color: var(--ink-700);">
+          <b>Testes Alternativos Não Paramétricos (previstos a priori no Protocolo):</b> Teste dos postos sinalizados de Wilcoxon pareado e Teste de Permutação Pareada (10.000 reamostragens com semente fixa <code>default_rng(2026)</code>).
+        </span>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: RESULTADOS CONFIRMATÓRIOS (TABELA 1 + INFERÊNCIA) -->
+    <section class="slide"
+      data-speaker="Yuri Cardoso Balieiro • Bloco 3: Resultados Confirmatórios (4:35 – 5:15)"
+      data-notes="Fala (Yuri): Na Tabela 1 vemos que a média de aberturas no mesmo dia subiu de 1,56 aberturas/dia no regime Parcial para 2,67 aberturas/dia no regime Completo — uma diferença média pareada de +1,11 aberturas/dia (+71,2% de aumento relativo). O teste t pareado unilateral resultou em t = 24,44 (gl = 193, p = 2,80e-61 < 0,05), rejeitando H0. O intervalo de confiança de 95% vai de 1,02 a 1,20 aberturas/dia e o tamanho de efeito de Cohen é dz = 1,75 (muito grande).">
+      <div class="section-tag">05 / Resultados Confirmatórios (Seção 4.1)</div>
+      <h2 class="slide-heading">Estatística Descritiva e Teste de Hipótese Principal</h2>
+
+      <table class="booktabs" style="margin-top: 12px; margin-bottom: 28px;">
+        <thead>
+          <tr>
+            <th>Regime / Variável (Unidade: aberturas/dia)</th>
+            <th class="mono-num">n</th>
+            <th class="mono-num">Média</th>
+            <th class="mono-num">DP</th>
+            <th class="mono-num">Mediana</th>
+            <th class="mono-num">IQR (Q1–Q3)</th>
+            <th class="mono-num">CV (%)</th>
+            <th class="mono-num">Outliers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Notificação Completa (4 pushes/dia)</td>
+            <td class="mono-num">194</td>
+            <td class="mono-num">2,67</td>
+            <td class="mono-num">0,95</td>
+            <td class="mono-num">2,95</td>
+            <td class="mono-num">1,43 (1,97–3,40)</td>
+            <td class="mono-num">35,6%</td>
+            <td class="mono-num">0</td>
+          </tr>
+          <tr>
+            <td>Notificação Parcial (1 a 3 pushes/dia)</td>
+            <td class="mono-num">194</td>
+            <td class="mono-num">1,56</td>
+            <td class="mono-num">0,69</td>
+            <td class="mono-num">1,54</td>
+            <td class="mono-num">0,91 (1,09–2,00)</td>
+            <td class="mono-num">44,5%</td>
+            <td class="mono-num">0</td>
+          </tr>
+          <tr>
+            <td>Diferença Pareada (d<sub>i</sub> = Completa − Parcial)</td>
+            <td class="mono-num">194</td>
+            <td class="mono-num">+1,11</td>
+            <td class="mono-num">0,63</td>
+            <td class="mono-num">+1,15</td>
+            <td class="mono-num">0,77 (0,73–1,50)</td>
+            <td class="mono-num">57,0%</td>
+            <td class="mono-num">3</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="cols-4">
+        <div class="panel" style="padding: 18px 20px;">
+          <span class="panel-label">Teste t Pareado (gl = 193)</span>
+          <div class="metric-value highlight" style="font-size: 2.1rem;">t = 24,44</div>
+          <p style="font-size: 0.82rem; margin-top: 6px;"><i>p</i> = 2,80 × 10<sup>−61</sup> &lt; 0,05<br>Decisão: <b>Rejeita H<sub>0</sub></b></p>
+        </div>
+        <div class="panel" style="padding: 18px 20px;">
+          <span class="panel-label">Intervalo de Confiança 95%</span>
+          <div class="metric-value" style="font-size: 2.1rem;">[1,02; 1,20]</div>
+          <p style="font-size: 0.82rem; margin-top: 6px;">aberturas/dia adicionais<br>(Erro padrão = 0,0455)</p>
+        </div>
+        <div class="panel" style="padding: 18px 20px;">
+          <span class="panel-label">Tamanho de Efeito (Cohen)</span>
+          <div class="metric-value highlight" style="font-size: 2.1rem;">d<sub>z</sub> = 1,75</div>
+          <p style="font-size: 0.82rem; margin-top: 6px;">Magnitude muito grande<br>(+71,2% de ganho relativo)</p>
+        </div>
+        <div class="panel" style="padding: 18px 20px;">
+          <span class="panel-label">Robustez Não Paramétrica</span>
+          <div class="metric-value" style="font-size: 2.1rem;">r<sub>rb</sub> = 0,981</div>
+          <p style="font-size: 0.82rem; margin-top: 6px;">Wilcoxon <i>p</i> = 1,14 × 10<sup>−32</sup><br>Permutação <i>p</i> &lt; 0,0001</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: VISUALIZAÇÃO DE DADOS (FIGURA 1) -->
+    <section class="slide"
+      data-speaker="Yuri Cardoso Balieiro • Bloco 3: Figura 1 e Interpretação Visual (5:15 – 5:45)"
+      data-notes="Fala (Yuri): Seguindo os princípios de qualidade gráfica de Cleveland (1994) e da Aula 04, construímos a Figura 1 com ambos os eixos verticais iniciando estritamente em zero. No painel (a), o boxplot com os 194 usuários mostra o deslocamento consistente de toda a distribuição. No painel (b), o histograma das diferenças pareadas d_i mostra que 189 dos 194 usuários (97,4%) tiveram diferença estritamente positiva, com o IC 95% [1,02; 1,20] muito distante da linha tracejada de H0 (zero).">
+      <div class="section-tag">06 / Visualização de Dados (Cleveland, 1994)</div>
+      <div class="cols-2" style="grid-template-columns: 0.95fr 1.05fr; align-items: center; gap: 44px;">
+        <div>
+          <h2 class="slide-heading" style="font-size: 2.1rem;">Leitura Visual da Distribuição e da Incerteza</h2>
+          <ul class="editorial-list" style="margin-top: 20px;">
+            <li><b>Eixos iniciando estritamente em zero (0):</b> Preserva a proporcionalidade visual das magnitudes e frequências sem distorção.</li>
+            <li><b>Painel (a) — Deslocamento Global:</b> A mediana sobe de 1,54 para 2,95 aberturas/dia, acompanhada da dispersão individual dos 194 blocos.</li>
+            <li><b>Painel (b) — Consistência Intrapessoal:</b> <b>97,4% dos usuários (189 de 194)</b> apresentaram diferença <i>d<sub>i</sub> &gt; 0</i>.</li>
+            <li><b>Precisão da Estimativa:</b> A faixa sombreada do IC 95% (<code>[1,02; 1,20]</code>) situa-se inteiramente à direita da linha de referência <i>H<sub>0</sub> : μ<sub>d</sub> = 0</i>.</li>
           </ul>
         </div>
 
-        <div class="card">
-          <div class="card-title">
-            <span>Pipeline de Limpeza (analise.py)</span>
-            <span class="badge badge-amber">Zero Edição Manual</span>
-          </div>
-          <ul>
-            <li><b>Passo 1 (Erros de instrumentação):</b> Exclusão de <b>3 janelas</b> com código de erro <code>-666</code> em <code>time_to_open</code>, restando <b>42.501 janelas válidas</b>.</li>
-            <li><b>Passo 2 (Agregação usuário-dia):</b> Consolidação por <code>(p_id, wave, day)</code> gerando <b>10.626 usuários-dia</b>.</li>
-            <li><b>Passo 3 (Recorte de dias ativos):</b> Remoção de 3.123 dias inativos (0 pushes e 0 aberturas), isolando os <b>7.503 usuários-dia ativos</b> (5.168 com 4 pushes; 2.335 com 1–3 pushes).</li>
+        <div style="background: #FFFFFF; border: 1px solid var(--ink-300); padding: 16px; border-radius: 4px; display: flex; justify-content: center;">
+          <img src="data:image/png;base64,{FIG_B64}" alt="Figura 1 do Artigo" style="max-height: 470px; width: auto; object-fit: contain;" />
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: ANÁLISES EXPLORATÓRIAS E AMEAÇAS À VALIDADE -->
+    <section class="slide"
+      data-speaker="Pedro de Mello Porto Daou • Bloco 4: Exploratórias e Ameaças à Validade (5:45 – 7:30)"
+      data-notes="Fala (Pedro): Seguindo a Seção 9 de integridade científica, separamos tudo que não estava no protocolo na subseção 4.2 Análises Exploratórias. Destaco o efeito do estado da tela (screen_on): quando o smartphone estava com a tela ligada no minuto anterior ao push, a taxa de abertura foi de 76,9% contra 61,2% com a tela desligada (+15,7 pontos percentuais, dz = 0,95). Na Seção 5, avaliamos as 4 ameaças à validade de Wohlin et al. (2012): Conclusão, Interna (a principal, por ser estudo observacional sem sorteio), Construção e Externa.">
+      <div class="section-tag">07 / Honestidade Científica (Seção 4.2) e Ameaças à Validade (Seção 5)</div>
+      <h2 class="slide-heading">Análises Exploratórias e Limites Metodológicos</h2>
+
+      <div class="cols-2" style="margin-top: 12px;">
+        <div class="panel">
+          <span class="panel-label">Seção 4.2 — Análises Exploratórias (Fora do Protocolo)</span>
+          <h3 class="panel-title">Fatores Moderadores de Contexto</h3>
+          <ul class="editorial-list">
+            <li><b>1. Estado da Tela no Disparo (<code>screen_on</code>, <i>n</i> = 198):</b> Taxa de abertura salta de <b>61,2%</b> (tela desligada) para <b>76,9%</b> com tela ligada no minuto anterior ao <i>push</i> (<b>+15,7 p.p.</b>; <i>t</i> = 13,39; <i>p</i> = 8,41 × 10<sup>−30</sup>; <i>d<sub>z</sub></i> = 0,95).</li>
+            <li><b>2. Dia Útil vs. Fim de Semana (em dias de 4 pushes, <i>n</i> = 190):</b> Maior média em dias úteis (<b>2,72 ± 0,98</b>) do que em fins de semana (<b>2,45 ± 1,06</b> aberturas/dia; <i>t</i> = 6,28; <i>p</i> = 1,11 × 10<sup>−9</sup>; <i>d<sub>z</sub></i> = 0,46).</li>
+            <li><b>3. Nível Usuário-Dia Não Pareado (<i>n<sub>1</sub></i> = 5.168 vs. <i>n<sub>2</sub></i> = 2.335):</b> Welch <i>t</i> = 40,17 (<i>p</i> &lt; 0,0001; IC 95% <code>[1,09; 1,20]</code>; <i>d</i> = 0,90; Vargha-Delaney <i>A</i> = 0,75).</li>
           </ul>
         </div>
 
-        <div class="card card-highlight">
-          <div class="card-title">
-            <span>Por que Blocos Pareados?</span>
-            <span class="badge badge-emerald">Aula 06 • n = 194</span>
-          </div>
-          <ul>
-            <li><b>Controle de ruído entre sujeitos:</b> Cada participante tem um hábito basal distinto de uso do celular.</li>
-            <li><b>O Usuário como Bloco:</b> Comparamos o <i>mesmo usuário</i> nos dois regimes: Y<sub>i,Completa</sub> vs. Y<sub>i,Parcial</sub>.</li>
-            <li><b>Critério de bloco completo:</b> Dos 201 usuários, 7 tiveram apenas um dos regimes; restaram <b>n = 194 usuários pareados</b>.</li>
-            <li><b>Verificação de Normalidade:</b> Shapiro-Wilk nas 194 diferenças d<sub>i</sub> resultou em <b>W = 0,9921 (p = 0,3775 &gt; 0,05)</b> → valida o <b>teste t pareado</b>!</li>
+        <div class="panel-accent">
+          <span class="panel-label">Seção 5 — Os 4 Tipos de Validade (Wohlin et al., 2012)</span>
+          <h3 class="panel-title">Ameaças e Mitigações Adotadas</h3>
+          <ul class="editorial-list">
+            <li><b>Interna (Central):</b> Estudo <i>observacional</i> (sem sorteio); entrega parcial pode correlacionar com bateria baixa ou modo offline. <i>Mitigação:</i> blocagem no usuário e linguagem estritamente associativa.</li>
+            <li><b>Conclusão:</b> Risco de pseudorreplicação longitudinal. <i>Mitigação:</i> agregação em <i>n</i> = 194 blocos + Wilcoxon e permutação (semente <code>2026</code>).</li>
+            <li><b>Construção:</b> <code>opened</code> mede abertura técnica, não profundidade cognitiva. <i>Mitigação:</i> telemetria objetiva via <i>Screen Time API</i>.</li>
+            <li><b>Externa:</b> Coorte europeia em app EMA. <i>Mitigação:</i> não generalizar diretamente para apps bancários (PIX) sem replicação.</li>
           </ul>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 4: RESULTADO PRINCIPAL (TABELA 1 + FIGURA 1 + TESTES) -->
-    <section class="slide" data-presenter="Yuri Cardoso Balieiro • Bloco 3: Resultado Confirmatório Principal (3:45 – 5:45)">
-      <div class="slide-kicker">Bloco 3 do Roteiro • Análise Confirmatória (Planejada no Protocolo)</div>
-      <h2 class="slide-title" style="font-size: 1.9rem; margin-bottom: 8px;">
-        Resultados Confirmatórios: Estatística Descritiva, Teste <i>t</i> Pareado e Figura 1
-      </h2>
+    <!-- SLIDE 9: CONCLUSÃO, TESTE A/B E REPRODUTIBILIDADE -->
+    <section class="slide"
+      data-speaker="Pedro de Mello Porto Daou • Bloco 5: Conclusão e Reprodutibilidade (7:30 – 8:30)"
+      data-notes="Fala (Pedro): Em conclusão, respondemos à pergunta de pesquisa demonstrando que a entrega completa de 4 notificações/dia está associada a +1,11 aberturas/dia (IC 95% [1,02; 1,20], dz = 1,75). Para a Engenharia de Software, isso indica que serviços de push devem priorizar confiabilidade de entrega e algoritmos context-aware que detectem quando a tela está ativa. O próximo passo para estabelecer causalidade no contexto de alertas PIX é um experimento controlado aleatorizado (Teste A/B). Todo o código e dados estão públicos no nosso GitHub.">
+      <div class="section-tag">08 / Conclusão, Próximos Passos e Reprodutibilidade (Seções 6 e 8)</div>
+      <h2 class="slide-heading">Síntese para Engenharia de Software e Pacote Aberto</h2>
 
-      <div class="grid-2" style="grid-template-columns: 1.22fr 0.78fr; align-items: center; gap: 22px;">
-        <div style="display: flex; flex-direction: column; gap: 14px;">
-          <div class="card" style="padding: 15px 18px;">
-            <div class="card-title">
-              <span>Tabela 1: Estatísticas Descritivas nos Blocos Pareados (n = 194 usuários)</span>
-              <span class="badge badge-blue">Unidade: aberturas/dia</span>
-            </div>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Regime / Variável</th>
-                  <th class="num">n</th>
-                  <th class="num">Média</th>
-                  <th class="num">DP</th>
-                  <th class="num">Mediana</th>
-                  <th class="num">IQR</th>
-                  <th class="num">CV%</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Notificação Completa (4/dia)</td>
-                  <td class="num">194</td>
-                  <td class="num">2,67</td>
-                  <td class="num">0,95</td>
-                  <td class="num">2,95</td>
-                  <td class="num">1,43</td>
-                  <td class="num">35,6%</td>
-                </tr>
-                <tr>
-                  <td>Notificação Parcial (1–3/dia)</td>
-                  <td class="num">194</td>
-                  <td class="num">1,56</td>
-                  <td class="num">0,69</td>
-                  <td class="num">1,54</td>
-                  <td class="num">0,91</td>
-                  <td class="num">44,5%</td>
-                </tr>
-                <tr>
-                  <td>Diferença Pareada (d<sub>i</sub> = C − P)</td>
-                  <td class="num">194</td>
-                  <td class="num">+1,11</td>
-                  <td class="num">0,63</td>
-                  <td class="num">+1,15</td>
-                  <td class="num">0,77</td>
-                  <td class="num">57,0%</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="card card-emerald" style="padding: 15px 18px;">
-            <div class="card-title">
-              <span>Decisão Estatística e Robustez Não Paramétrica (α = 0,05)</span>
-              <span class="badge badge-emerald">Rejeita H<sub>0</sub></span>
-            </div>
-            <ul>
-              <li><b>Teste Primário (t pareado unilateral):</b> <code>t = 24,44</code> | <code>gl = 193</code> | <code>EP = 0,0455</code> | <b>p = 2,80 × 10<sup>-61</sup> &lt; 0,05</b>.</li>
-              <li><b>Intervalo de Confiança (IC 95%):</b> <b>[1,02; 1,20] aberturas/dia</b> (limite inferior muito acima de zero).</li>
-              <li><b>Tamanho de Efeito (Cohen):</b> <b>d<sub>z</sub> = 1,75</b> (efeito muito grande; aumento relativo de <b>+71,2%</b> nas aberturas diárias).</li>
-              <li><b>Testes Alternativos do Protocolo:</b> Wilcoxon pareado (<code>T = 18.733,0</code>; <code>p = 1,14 × 10<sup>-32</sup></code>; <code>r<sub>rb</sub> = 0,981</code>) e Permutação Pareada (10.000 sorteios, semente <code>2026</code>: <code>p &lt; 0,0001</code>).</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="figure-container">
-          <img src="data:image/png;base64,{FIG_B64}" alt="Figura 1 do Artigo" />
-          <span style="color:#334155; font-size:0.74rem; font-weight:600; margin-top:6px;">
-            Figura 1 do artigo (300 DPI): Eixos iniciando estritamente em zero (Cleveland, 1994).
-          </span>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 5: ANÁLISES EXPLORATÓRIAS E 4 AMEAÇAS À VALIDADE -->
-    <section class="slide" data-presenter="Pedro de Mello Porto Daou • Bloco 4: Exploratórias e Ameaças à Validade (5:45 – 7:30)">
-      <div class="slide-kicker">Bloco 4 do Roteiro • Honestidade Científica (Seção 9) e Ameaças à Validade (Aula 03)</div>
-      <h2 class="slide-title">Análises Exploratórias e as 4 Ameaças à Validade</h2>
-
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-title">
-            <span>Subseção 4.2: Análises Exploratórias (Fora do Protocolo)</span>
-            <span class="badge badge-amber">Sem HARKing</span>
-          </div>
-          <ul>
-            <li><b>1. Nível Usuário-Dia Independente (n<sub>1</sub> = 5.168 vs. n<sub>2</sub> = 2.335):</b>
-              Média de 2,75 vs. 1,61 aberturas/dia (Welch <code>t = 40,17</code>; <code>p &lt; 0,0001</code>; IC 95% <code>[1,09; 1,20]</code>; <code>d = 0,90</code>; Vargha-Delaney <code>A = 0,75</code>).</li>
-            <li><b>2. Moderadora Dia Útil vs. Fim de Semana (em dias de 4 pushes, n = 190):</b>
-              Maior frequência em dias úteis (<b>2,72 ± 0,98</b>) do que no fim de semana (<b>2,45 ± 1,06</b> aberturas/dia; <code>t = 6,28</code>; <code>p = 1,11 × 10<sup>-9</sup></code>; <code>d<sub>z</sub> = 0,46</code>).</li>
-            <li><b>3. Contexto do Smartphone no Disparo (Tela Ligada vs. Desligada, n = 198):</b>
-              Taxa de abertura salta de <b>61,2%</b> (tela desligada) para <b>76,9%</b> quando a tela estava ligada no minuto anterior ao push (<b>+15,7 p.p.</b>; <code>t = 13,39</code>; <code>p = 8,41 × 10<sup>-30</sup></code>; <code>d<sub>z</sub> = 0,95</code>).</li>
-          </ul>
-        </div>
-
-        <div class="card card-amber">
-          <div class="card-title">
-            <span>Seção 5: Os 4 Tipos de Ameaças à Validade (Wohlin et al., 2012)</span>
-            <span class="badge badge-rose">Rigor Metodológico</span>
-          </div>
-          <ul>
-            <li><b>Validade de Conclusão:</b> Risco de violação paramétrica ou inflação de graus de liberdade. <i>Mitigação:</i> agregação em n = 194 blocos independentes + confirmação via Wilcoxon e permutação (semente <code>2026</code>).</li>
-            <li><b>Validade Interna (Principal Limitação):</b> Estudo <b>observacional</b> (sem sorteio). Falhas de entrega (1–3 pushes) podem correlacionar com bateria baixa ou modo economia. <i>Mitigação:</i> blocagem por usuário e ausência total de afirmações causais.</li>
-            <li><b>Validade de Construção:</b> <code>opened</code> mede acionamento técnico do app, não engajamento cognitivo profundo. <i>Mitigação:</i> uso de telemetria objetiva (<i>Screen Time API</i>).</li>
-            <li><b>Validade Externa:</b> Amostra de jovens adultos em app EMA na Europa. <i>Mitigação:</i> escopo restrito a notificações recorrentes; requer replicação em apps financeiros (PIX).</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 6: CONCLUSÃO, REPRODUTIBILIDADE E CHECKLIST SEÇÃO 10 -->
-    <section class="slide" data-presenter="Pedro de Mello Porto Daou • Bloco 5: Conclusão e Reprodutibilidade (7:30 – 8:30)">
-      <div class="slide-kicker">Bloco 5 do Roteiro • Conclusão, Próximos Passos e Pacote de Reprodutibilidade</div>
-      <h2 class="slide-title">Conclusão para Engenharia de Software e Entrega Final</h2>
-
-      <div class="grid-3">
-        <div class="card card-emerald">
-          <div class="card-title">
-            <span>Resposta à Pergunta</span>
-            <span class="badge badge-emerald">Seção 6</span>
-          </div>
+      <div class="cols-3" style="margin-top: 20px;">
+        <div class="panel-accent">
+          <span class="panel-label">Resposta à Pergunta</span>
+          <h3 class="panel-title">Associação Forte e Consistente</h3>
           <p>
-            Dias com entrega completa das 4 notificações <i>push</i> estão associados a um acréscimo médio pareado de <b>+1,11 aberturas/dia</b> (IC 95% <code>[1,02; 1,20]</code>; <code>d<sub>z</sub> = 1,75</code>).
-          </p>
-          <p>
-            <b>Implicação prática em ES:</b>
-            (1) Garantir confiabilidade na entrega de <i>push</i> na camada de infraestrutura;
-            (2) Adotar despacho sensível ao contexto (<i>context-aware</i>), priorizando momentos em que a tela está ativa (+15,7 p.p.).
+            A entrega completa das 4 notificações <i>push</i> diárias está associada a um ganho médio pareado de <b>+1,11 aberturas/dia</b> (IC 95%: <code>[1,02; 1,20]</code>; <i>d<sub>z</sub></i> = 1,75), potencializado quando o disparo ocorre com a tela ativa (+15,7 p.p.).
           </p>
         </div>
 
-        <div class="card">
-          <div class="card-title">
-            <span>Próximo Passo Experimental</span>
-            <span class="badge badge-blue">Teste A/B Controlado</span>
-          </div>
+        <div class="panel">
+          <span class="panel-label">Próximo Passo para Estudo Completo</span>
+          <h3 class="panel-title">Experimento Controlado (Teste A/B)</h3>
           <p>
-            Para isolar confundidores de rede/sistema operacional e estabelecer <b>causalidade estrita</b>, o próximo passo é um <b>experimento controlado aleatorizado (Teste A/B)</b> em produção.
-          </p>
-          <p>
-            Nele, o servidor sorteia aleatoriamente a cadência diária de notificações e o agendamento sensível ao estado da tela entre grupos de usuários.
+            Para eliminar variáveis de confusão de rede/OS e estabelecer <b>inferência causal</b> no domínio financeiro (alertas PIX), propõe-se um <b>Teste A/B aleatorizado</b> sorteando o disparo imediato vs. sensível ao contexto.
           </p>
         </div>
 
-        <div class="card card-highlight">
-          <div class="card-title">
-            <span>Checklist Seção 10 (100%)</span>
-            <span class="badge badge-blue">Entregáveis Prontos</span>
-          </div>
-          <ul>
-            <li>✅ <b>Artigo ACM (≤ 4 págs.):</b> <code>artigo_final_MCEQ.docx</code> sem resíduos <code>WOODSTOCK'18</code> e com Declaração de IA.</li>
-            <li>✅ <b>Protocolo de 1 Página:</b> <code>protocolo_1_pagina.md</code> completo.</li>
-            <li>✅ <b>Repositório Python:</b> <code>analise.py</code> com semente <code>default_rng(2026)</code>, <code>README.md</code> e dados brutos/limpos.</li>
-            <li>✅ <b>Roteiro do Vídeo (≤ 10 min):</b> <code>roteiro_video.md</code> dividido entre os 3 autores.</li>
-          </ul>
+        <div class="panel">
+          <span class="panel-label">Pacote de Reprodutibilidade</span>
+          <h3 class="panel-title">GitHub &amp; Template ACM</h3>
+          <p style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); margin-bottom: 10px; word-break: break-all;">
+            github.com/jgabrieldsl/mceq_projeto_final
+          </p>
+          <p>
+            Inclui <code>analise.py</code> (semente fixa <code>default_rng(2026)</code>), base bruta OSF, CSVs limpos, protocolo de 1 página e artigo ACM (≤ 4 páginas).
+          </p>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- Bottom Navigation -->
-  <footer class="bottom-bar">
-    <div class="progress-dots" id="progress-dots"></div>
-    <div class="nav-controls">
-      <button class="btn-nav" onclick="changeSlide(-1)">← Anterior</button>
-      <span class="slide-counter" id="slide-counter">1 / 6</span>
-      <button class="btn-nav" onclick="changeSlide(1)">Próximo →</button>
-      <button class="btn-nav" onclick="toggleFullScreen()" title="Tela Cheia (Tecla F)">⛶ Tela Cheia</button>
+  <!-- Collapsible Speaker Notes Drawer (Toggled via 'N' key or button) -->
+  <aside class="notes-drawer" id="notes-drawer">
+    <div class="notes-header">
+      <span>Roteiro de Fala / Cola Completa para Apresentação e Arguição (Pressione 'N' para ocultar)</span>
+      <span id="notes-speaker-tag"></span>
+    </div>
+    <div class="notes-body" id="notes-content"></div>
+  </aside>
+
+  <!-- Bottom Minimal Footer -->
+  <footer class="footer">
+    <div class="footer-steps" id="footer-steps"></div>
+    <div class="footer-actions">
+      <button class="ctrl-btn" id="btn-notes" onclick="toggleNotes()" title="Ativar/Desativar Roteiro de Fala (Tecla N)">Roteiro de Fala (N)</button>
+      <button class="ctrl-btn" onclick="changeSlide(-1)">←</button>
+      <button class="ctrl-btn" onclick="changeSlide(1)">→</button>
+      <button class="ctrl-btn" onclick="toggleFullScreen()" title="Tela Cheia (Tecla F)">Tela Cheia (F)</button>
     </div>
   </footer>
 
   <script>
     const slides = Array.from(document.querySelectorAll('.slide'));
-    const dotsContainer = document.getElementById('progress-dots');
-    const counterEl = document.getElementById('slide-counter');
-    const presenterText = document.getElementById('presenter-text');
-    let currentSlide = 0;
+    const stepsContainer = document.getElementById('footer-steps');
+    const speakerPill = document.getElementById('speaker-pill');
+    const notesDrawer = document.getElementById('notes-drawer');
+    const notesContent = document.getElementById('notes-content');
+    const notesSpeakerTag = document.getElementById('notes-speaker-tag');
+    const btnNotes = document.getElementById('btn-notes');
+    let current = 0;
+
+    const shortLabels = [
+      "01 Capa",
+      "02 Problema",
+      "03 Hipóteses",
+      "04 Base OSF",
+      "05 Método",
+      "06 Tabela 1",
+      "07 Figura 1",
+      "08 Validade",
+      "09 Conclusão"
+    ];
 
     slides.forEach((_, idx) => {{
-      const dot = document.createElement('div');
-      dot.className = 'dot' + (idx === 0 ? ' active' : '');
-      dot.onclick = () => goToSlide(idx);
-      dotsContainer.appendChild(dot);
+      const btn = document.createElement('button');
+      btn.className = 'step-btn' + (idx === 0 ? ' active' : '');
+      btn.textContent = shortLabels[idx] || `0${{idx + 1}}`;
+      btn.onclick = () => goTo(idx);
+      stepsContainer.appendChild(btn);
     }});
 
-    function updateUI() {{
-      slides.forEach((s, i) => s.classList.toggle('active', i === currentSlide));
-      Array.from(dotsContainer.children).forEach((d, i) => d.classList.toggle('active', i === currentSlide));
-      counterEl.textContent = `${{currentSlide + 1}} / ${{slides.length}}`;
-      presenterText.textContent = slides[currentSlide].getAttribute('data-presenter');
+    function render() {{
+      slides.forEach((s, i) => s.classList.toggle('active', i === current));
+      Array.from(stepsContainer.children).forEach((b, i) => b.classList.toggle('active', i === current));
+      const spk = slides[current].getAttribute('data-speaker') || '';
+      const parts = spk.split('•');
+      speakerPill.innerHTML = parts.length > 1
+        ? `<strong>${{parts[0].trim()}}</strong> · ${{parts[1].trim()}}`
+        : `<strong>${{spk}}</strong>`;
+      notesContent.textContent = slides[current].getAttribute('data-notes') || '';
+      notesSpeakerTag.textContent = `Slide ${{current + 1}} de ${{slides.length}}`;
     }}
 
-    function goToSlide(idx) {{
-      currentSlide = (idx + slides.length) % slides.length;
-      updateUI();
+    function goTo(idx) {{
+      current = (idx + slides.length) % slides.length;
+      render();
     }}
 
-    function changeSlide(step) {{
-      goToSlide(currentSlide + step);
+    function changeSlide(delta) {{
+      goTo(current + delta);
+    }}
+
+    function toggleNotes() {{
+      const isOpen = notesDrawer.classList.toggle('open');
+      btnNotes.classList.toggle('active-toggle', isOpen);
     }}
 
     function toggleFullScreen() {{
@@ -831,10 +944,14 @@ HTML_CONTENT = f"""<!DOCTYPE html>
       }} else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {{
         e.preventDefault();
         changeSlide(-1);
+      }} else if (e.key === 'n' || e.key === 'N') {{
+        toggleNotes();
       }} else if (e.key === 'f' || e.key === 'F') {{
         toggleFullScreen();
       }}
     }});
+
+    render();
   </script>
 </body>
 </html>
@@ -844,4 +961,4 @@ with open(OUT_HTML, "w", encoding="utf-8") as f:
     f.write(HTML_CONTENT)
 
 shutil.copyfile(OUT_HTML, DOWNLOADS_HTML)
-print(f"Apresentação HTML gerada com sucesso em:\n - {OUT_HTML}\n - {DOWNLOADS_HTML}")
+print("Apresentação clean editorial gerada com sucesso!")
